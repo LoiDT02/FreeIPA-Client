@@ -10,7 +10,7 @@ else
 fi
 
 # ====== Kiểm tra các biến bắt buộc ======
-REQUIRED_VARS=("IPA_SERVER_IP" "IPA_SERVER" "IPA_DOMAIN" "IPA_REALM")
+REQUIRED_VARS=("IPA_SERVER_IP" "IPA_SERVER" "IPA_DOMAIN" "IPA_REALM" "HOSTNAME_FQDN")
 for var in "${REQUIRED_VARS[@]}"; do
   if [ -z "${!var}" ]; then
     echo "Thiếu biến cấu hình: $var. Vui lòng kiểm tra file .env"
@@ -25,15 +25,13 @@ echo ""
 
 # ====== [0/6] Đặt hostname đầy đủ ======
 echo "[0/6] Đặt hostname đầy đủ (FQDN)..."
-HOSTNAME_SHORT=$(hostname)
-HOSTNAME_FQDN="${HOSTNAME_SHORT}.${IPA_DOMAIN}"
 
 # Đặt lại hostname
 sudo hostnamectl set-hostname "$HOSTNAME_FQDN"
 
 # Đảm bảo /etc/hosts có thông tin hostname đầy đủ
 if ! grep -q "$HOSTNAME_FQDN" /etc/hosts; then
-  echo "127.0.1.1 $HOSTNAME_FQDN $HOSTNAME_SHORT" | sudo tee -a /etc/hosts
+  echo "127.0.1.1 $HOSTNAME_FQDN" | sudo tee -a /etc/hosts
   echo "Đã thêm $HOSTNAME_FQDN vào /etc/hosts"
 fi
 
